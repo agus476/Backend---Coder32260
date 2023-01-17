@@ -1,3 +1,4 @@
+
 const fs = require("fs");
 
 
@@ -30,18 +31,37 @@ class ProductManager{
                  
 
                   const data = await this.getProducts() 
-                  const repeatCode = data.some(e => e.code == code)
-                  repeatCode == true ? console.log("El codigo esta repetido") : data.push(newProduct)
+                  const repeatCode = data.some(e => e.code == newProduct.code)
+                  repeatCode == true ? console.log("El codigo esta repetido") : data.push({...newProduct,id:await this.getId()})
                    await fs.promises.writeFile(this.products,JSON.stringify(data))  
 
                 }
 
 
                 async getProductsById(id){
-
-                   let productFind = this.products.find( e => e.id == id ) 
+                   let data = await this.getProducts()
+                   let productFind = data.find( e => e.id == id ) 
                    return productFind === undefined ?"Not found": productFind
                     
+                }
+
+                async updateProducts(id , product){
+                  let data = await this.getProducts()
+                  let i = data.findIndex(e => e.id === id)
+                  product.id = id
+                  data.splice(i,1,product)
+                  await fs.promises.writeFile(this.products, JSON.stringify(data))
+
+               }
+
+                async deleteProduct(id){
+                       
+                  let data = await this.getProducts()
+                  let i = data.findIndex(e => e.id === id)
+                  data.splice(i,1)
+                  await fs.promises.writeFile(this.products, JSON.stringify(data))
+
+
                 }
 
 
@@ -51,13 +71,4 @@ class ProductManager{
 }
 
 
-const productManager = new ProductManager()
-productManager.addProduct("Motorola G20", "Celular gama media", 35000, "imagen", "MG20", 5);
-productManager.addProduct("Samsung Galaxy A20", "Celular gama media", 32000, "imagen", "SA20", 3);
-productManager.addProduct("Motorola G50", "Celular gama media alta", 12000, "imagen", "SA20", 2);
-console.log(productManager.getProducts())
-productManager.addProduct("Auriculares Iphone", "Auriculares", 2000, "imagen", "AP5", 5);
-productManager.addProduct("Cargador generico", "Cargadores", 2000, "imagen", "CG15", 5);
-console.log(productManager.getProducts())
-console.log(productManager.getProductsById(3))
-console.log(productManager.getProductsById(4))
+module.exports = ProductManager;

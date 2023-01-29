@@ -4,33 +4,18 @@ const express =  require ('express')
 
 const app = express()
 
+const proudctsRouter = require("./routes/products");
+const cartsRouter = require("./routes/carts");
+
+app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
+app.use("/api/products", proudctsRouter);
+app.use("/api/carts", cartsRouter);
 
-const ProductManager = require("./productManager")
-const manager = new ProductManager("product.json")
 
-app.get("/products", async (req, res) => {
-    let { limit } = req.query;
-    let products = await manager.getProducts();
-    res.send(products.slice(0, limit));
-  });
-  
-  
-  app.get("/products", async (req, res) => {
-    res.send(await manager.getProducts());
-  });
-  
-  
-  app.get("/products/:id", async (req, res) => {
-    let id = req.params.id;
-    let productId = await manager.getProdctById(id);
-    if (!productId) {
-      res.send("404 - ID not found");
-    } else {
-      res.send(productId);
-    }
-  });
+
+
 
 
 // Server listen on port//

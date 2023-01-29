@@ -3,38 +3,62 @@ const express =  require ('express')
 const app = express()
 
 app.use(express.urlencoded({extended:true}))
+app.use(express.json())
 
+let users = []
 
-let users = [
- 
-  {id: 1, nombre:'Pepe', genero:'m' },
-  {id: 2, nombre:'Yair', genero: 'm'},
-  {id: 3, nombre:'Laura', genero: 'f'},
-  {id: 4, nombre:'Luciana', genero: 'f'}
+const getNewId = () => {
+ return users.length +1; 
+}
+
+app.post('/user', (req, res) => {
+
+  let user = req.body
+  user.id = getNewId()
+  console.log(user)
+  if(!user.name){
+     res.status(400).send({status : "error" , error : "Incomplete name value"})
+  }
+  users.push(user)
+  res.send(user)
+}
+)
+
+app.put('/user/:id', (req,res) =>{
+
+  let id = req.params.id;
+  let user = req.body;
+ users [users.findIndex( e => e.id == id) ]= user;
   
-  ]
+  res.send("ok")
 
-app.get('/',(req,res) => {
-    let {genero} = req.query;
-    if (genero){
-      console.log("Existe genero"
-      )
-    }
-
-    else{ console.log("No existe genero")}
-    res.send(users)
 })
 
-app.get('/:userid/:name',(req,res) => {
-  
-  let userid = req.params.userid
-  let name = req.params.name
-  let names = users.find (e => e.nombre == name)
-  let usuario = users.find( e => e.id == userid)
 
-  res.send(console.log(`Hola ${names.nombre}`))
+app.delete('/user/:id', (req,res) =>{
+
+  let id = req.params.id;
+  let user = req.body;
+ users [users.findIndex( e => e.id == id) ]= user;
+  
+  res.send("ok")
+
 })
 
+app.get('/', (req, res) => { 
+
+res.send("Para probar endpoint de user para mandar peticion por postman ")
+
+})
+
+app.get('/user', (req, res) => {
+
+res.send(users)
+
+}
+
+
+)
 
 
 
